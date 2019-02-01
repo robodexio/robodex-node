@@ -1,0 +1,11 @@
+{
+  "name": "mark",
+  "version": "0.1.0",
+  "description": "Calculate mark price",
+  "author": "Vitaly Berg <bergusman@gmail.com>",
+  "private": true,
+  "dependencies": {
+    "ioredis": "^4.5.1",
+    "pg-promise": "^8.5.5"
+  }
+}

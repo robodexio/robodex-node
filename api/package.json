@@ -1,0 +1,15 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "description": "REST API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vitaly Berg <bergusman@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "morgan": "^1.9.1"
+  }
+}
