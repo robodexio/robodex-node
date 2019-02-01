@@ -7,13 +7,13 @@ module.exports = class {
         this.ask = null
         this.bid = null
         this.price = null
-        this.updatedAt = null
+        this.time = null
         this.latency = null
     }
 
     get online() {
-        if (this.updatedAt) {
-            return Date.now() - this.updatedAt < 2200
+        if (this.time) {
+            return Date.now() - this.time < 2200
         } else {
             return false
         }
@@ -32,7 +32,7 @@ module.exports = class {
             this.ask = parseFloat(ticker.ask)
             this.bid = parseFloat(ticker.bid)
             this.price = (this.ask + this.bid) / 2
-            this.updatedAt = Date.now()
+            this.time = Date.now()
         }).catch((err) => {
             console.error(err)
         })
