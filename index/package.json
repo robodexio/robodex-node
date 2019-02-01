@@ -1,0 +1,10 @@
+{
+  "name": "index",
+  "version": "0.1.0",
+  "description": "Calculate index",
+  "author": "Vitaly Berg <bergusman@gmail.com>",
+  "private": true,
+  "dependencies": {
+    "request": "^2.88.0"
+  }
+}

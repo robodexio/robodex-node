@@ -1,0 +1,16 @@
+veresion: '3'
+services:
+  postgres:
+    build: postgres
+
+  redis:
+    build: redis
+
+  rabbit:
+    build: rabbit
+
+  api:
+    build: api
+
+  index:
+    build: index
