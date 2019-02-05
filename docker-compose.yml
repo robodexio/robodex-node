@@ -17,7 +17,7 @@ services:
   udf:
     build: udf
     restart: always
-    environments:
+    environment:
       - NODE_ENV=production
 
   web:
