@@ -19,7 +19,7 @@ services:
       - "80:9000"
 
   web:
-    build: ../dm-react
+    build: ../robodex-react
     restart: always
     ports:
       - "80:80"
