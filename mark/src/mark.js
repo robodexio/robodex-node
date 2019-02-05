@@ -17,6 +17,8 @@ async function calculateMarkPrice(instrument) {
         return index
     }
 
+    console.log('Fair Price:', fairPrice)
+
     const ema = await calculateEMA(fairPrice)
 
     let markPrice = index + ema
@@ -36,7 +38,7 @@ function limitMarkPriceByIndex(price, index) {
 }
 
 function calculateFairPrice(orderbook) {
-    if (orderbook.bids.length === 0 && orderbook.asks.length === 0) {
+    if (orderbook.bids.length === 0 || orderbook.asks.length === 0) {
         return null
     }
 
@@ -46,17 +48,45 @@ function calculateFairPrice(orderbook) {
 }
 
 function calculateFairImpactBid(orderbook) {
-    if (orderbook.bids.length === 0) {
-        return null
-    }
+    const avgBidPriceIn10000 = calculateAvgPriceForQuantity(10000, orderbook.bids).price
+
     const bestBidPrice = orderbook.bids[0].price
     const bidPrice = bestBidPrice - bestBidPrice * 0.001
-    return bidPrice
+    
+    return Math.max(avgBidPriceIn10000, bidPrice)
 }
 
 function calculateFairImpactAsk(orderbook) {
-    if (orderbook.asks.length === 0) {
-        return null
+    const avgAskPriceIn10000 = calculateAvgPriceForQuantity(10000, orderbook.asks).price
+
+    const bestAskPrice = orderbook.asks[0].price
+    const askPrice = bestAskPrice + bestAskPrice * 0.001
+    
+    return Math.min(avgAskPriceIn10000, askPrice)
+}
+
+function calculateAvgPriceForQuantity(quantity, side) {
+    let totalQuantity = 0
+    let totalPower = 0
+
+    for (level of side) {
+        let takedQuantity = level.quantity
+
+        if (totalQuantity + takedQuantity > quantity) {
+            takedQuantity = quantity - totalQuantity
+        }
+
+        totalQuantity += takedQuantity
+        totalPower += takedQuantity * level.price
+
+        if (totalQuantity === quantity) {
+            break
+        }
+    }
+
+    return {
+        quantity: totalQuantity,
+        price: totalPower / totalQuantity
     }
 }
 

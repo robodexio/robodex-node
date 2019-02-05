@@ -1,0 +1,12 @@
+{
+  "name": "core",
+  "version": "0.1.0",
+  "description": "Core",
+  "author": "Vitaly Berg <bergusman@gmail.com>",
+  "private": true,
+  "dependencies": {
+    "camelcase-keys": "^5.0.0",
+    "ioredis": "^4.5.1",
+    "pg-promise": "^8.5.5"
+  }
+}
