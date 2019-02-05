@@ -3,23 +3,15 @@ services:
   nginx:
     build: nginx
     restart: always
-    ports:
-      - "80:80"
 
   landing:
     build: ../robodex-landing
     restart: always
-    ports:
-      - "80:80"
 
   api:
     build: api
     restart: always
-    ports:
-      - "80:9000"
 
   web:
     build: ../robodex-react
     restart: always
-    ports:
-      - "80:80"
