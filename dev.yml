@@ -1,0 +1,47 @@
+version: '3'
+services:
+  postgres:
+    build: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=dm
+      - POSTGRES_PASSWORD=A3YOnnVdHrYszvog
+    volumes:
+      - ~/postgres/dm:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  rabbit:
+    image: rabbitmq:management
+    restart: always
+    hostname: dm-rabbit
+    ports:
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=dm
+      - RABBITMQ_DEFAULT_PASS=bEE2VWehu7JI0f3N
+
+  redis:
+    image: redis
+    restart: always
+
+  index:
+    build: index
+    restart: always
+    environment:
+      - PG_URL=postgres://dm:A3YOnnVdHrYszvog@postgres/dm
+      - REDIS_URL=redis://redis:6379/
+    depends_on:
+      - redis
+      - postgres
+
+  mark:
+    build: mark
+    restart: always
+    environment:
+      - PG_URL=postgres://dm:A3YOnnVdHrYszvog@postgres/dm
+      - REDIS_URL=redis://redis:6379/
+    depends_on:
+      - redis
+      - postgres
+      - index

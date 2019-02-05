@@ -1,15 +1,10 @@
 {
   "name": "api",
   "version": "0.1.0",
-  "description": "REST API",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "WS API",
   "author": "Vitaly Berg <bergusman@gmail.com>",
-  "license": "ISC",
+  "private": true,
   "dependencies": {
-    "express": "^4.16.4",
-    "morgan": "^1.9.1"
+    "ws": "^6.1.3"
   }
 }

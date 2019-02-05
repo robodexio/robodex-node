@@ -1,47 +1,25 @@
 version: '3'
 services:
-  postgres:
-    build: postgres
+  nginx:
+    build: nginx
     restart: always
-    environment:
-      - POSTGRES_USER=dm
-      - POSTGRES_PASSWORD=A3YOnnVdHrYszvog
-    volumes:
-      - ~/postgres/dm:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "80:80"
 
-  rabbit:
-    image: rabbitmq:management
+  landing:
+    build: ../robodex-landing
     restart: always
-    hostname: dm-rabbit
     ports:
-      - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=dm
-      - RABBITMQ_DEFAULT_PASS=bEE2VWehu7JI0f3N
+      - "80:80"
 
-  redis:
-    image: redis
+  api:
+    build: api
     restart: always
+    ports:
+      - "80:9000"
 
-  index:
-    build: index
+  web:
+    build: ../dm-react
     restart: always
-    environment:
-      - PG_URL=postgres://dm:A3YOnnVdHrYszvog@postgres/dm
-      - REDIS_URL=redis://redis:6379/
-    depends_on:
-      - redis
-      - postgres
-
-  mark:
-    build: mark
-    restart: always
-    environment:
-      - PG_URL=postgres://dm:A3YOnnVdHrYszvog@postgres/dm
-      - REDIS_URL=redis://redis:6379/
-    depends_on:
-      - redis
-      - postgres
-      - index
+    ports:
+      - "80:80"
