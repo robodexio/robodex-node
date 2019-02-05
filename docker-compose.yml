@@ -3,6 +3,8 @@ services:
   nginx:
     build: nginx
     restart: always
+    posts:
+      - "80:80"
 
   landing:
     build: ../robodex-landing
