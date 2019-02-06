@@ -3,12 +3,13 @@ const request = require('request')
 module.exports = class {
     constructor(symbol) {
         this.symbol = symbol
-        this.name = 'kraken'
-        this.ask = null
-        this.bid = null
+        this.exchange = 'kraken'
+        this.name = 'Kraken'
         this.price = null
         this.time = null
-        this.latency = null
+
+        setInterval(() => this.load(), 800)
+        this.load()
     }
 
     get online() {
@@ -19,20 +20,12 @@ module.exports = class {
         }
     }
 
-    start() {
-        setInterval(() => this.load(), 800)
-        this.load()
-    }
-
     load() {
-        const started = Date.now()
         this.ticker(this.symbol).then((result) => {
-            this.latency = Date.now() - started
-            
             const ticker = result[this.symbol]
-            this.ask = parseFloat(ticker.a[0])
-            this.bid = parseFloat(ticker.b[0])
-            this.price = (this.ask + this.bid) / 2
+            const ask = parseFloat(ticker.a[0])
+            const bid = parseFloat(ticker.b[0])
+            this.price = (ask + bid) / 2
             this.time = Date.now()
         }).catch((err) => {
             console.error(err)
@@ -43,7 +36,7 @@ module.exports = class {
         // API Documentation: https://www.kraken.com/features/api
         return new Promise((resolve, reject) => {
             request({
-                url: 'https://api.kraken.com/0/public/Ticker', 
+                url: 'https://api.kraken.com/0/public/Ticker',
                 qs: {
                     pair: pair
                 }

@@ -13,6 +13,11 @@ services:
   api:
     build: api
     restart: always
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379/
+    depends_on:
+      - redis
 
   udf:
     build: udf
@@ -23,3 +28,19 @@ services:
   web:
     build: ../robodex-react
     restart: always
+    depends_on:
+      - api
+      - udf
+
+  redis:
+    image: redis
+    restart: always
+
+  index:
+    build: index
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379/
+    depends_on:
+      - redis

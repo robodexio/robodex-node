@@ -3,12 +3,13 @@ const request = require('request')
 module.exports = class {
     constructor(symbol) {
         this.symbol = symbol
-        this.name = 'bitstamp'
-        this.ask = null
-        this.bid = null
+        this.exchange = 'bitstamp'
+        this.name = 'Bitstamp'
         this.price = null
         this.time = null
-        this.latency = null
+
+        setInterval(() => this.load(), 1100)
+        this.load()
     }
 
     get online() {
@@ -19,19 +20,11 @@ module.exports = class {
         }
     }
 
-    start() {
-        setInterval(() => this.load(), 1100)
-        this.load()
-    }
-
     load() {
-        const started = Date.now()
         this.ticker(this.symbol).then((ticker) => {
-            this.latency = Date.now() - started
-
-            this.ask = parseFloat(ticker.ask)
-            this.bid = parseFloat(ticker.bid)
-            this.price = (this.ask + this.bid) / 2
+            const ask = parseFloat(ticker.ask)
+            const bid = parseFloat(ticker.bid)
+            this.price = (ask + bid) / 2
             this.time = Date.now()
         }).catch((err) => {
             console.error(err)
@@ -42,7 +35,7 @@ module.exports = class {
         // API Documentation: https://www.bitstamp.net/api/
         return new Promise((resolve, reject) => {
             request({
-                url: `https://www.bitstamp.net/api/v2/ticker/${this.symbol}`
+                url: `https://www.bitstamp.net/api/v2/ticker/${pair}`
             }, (err, res, body) => {
                 if (err) {
                     return reject(err)

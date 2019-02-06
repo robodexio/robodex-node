@@ -2,52 +2,38 @@ const request = require('request')
 
 module.exports = class {
     constructor(symbol) {
-        this.name = 'binance'
         this.symbol = symbol
-        this.ask = null
-        this.bid = null
+        this.exchange = 'gemini'
+        this.name = 'Gemini'
         this.price = null
         this.time = null
 
-        this.latency = null
+        setInterval(() => this.load(), 900)
+        this.load()
     }
 
     get online() {
         if (this.time) {
-            return Date.now() - this.time < 1000
+            return Date.now() - this.time < 1800
         } else {
             return false
         }
     }
 
-    start() {
-        setInterval(() => this.load(), 500)
-        this.load()
-    }
-
     load() {
-        const started = Date.now()
-        this.bookTicker(this.symbol).then((ticker) => {
-            this.latency = Date.now() - started
-
-            this.ask = parseFloat(ticker.askPrice)
-            this.bid = parseFloat(ticker.bidPrice)
-            this.price = (this.ask + this.bid) / 2
+        this.ticker(this.symbol).then((ticker) => {
+            const ask = parseFloat(ticker.ask)
+            const bid = parseFloat(ticker.bid)
+            this.price = (ask + bid) / 2
             this.time = Date.now()
         }).catch((err) => {
             console.error(err)
         })
     }
 
-    bookTicker(symbol) {
-        // API Documentation: https://github.com/binance-exchange/binance-official-api-docs
+    ticker(symbol) {
         return new Promise((resolve, reject) => {
-            request({
-                url: 'https://api.binance.com/api/v3/ticker/bookTicker', 
-                qs: {
-                    symbol: symbol
-                }
-            }, (err, res, body) => {
+            request(`https://api.gemini.com/v1/pubticker/${symbol}`, (err, res, body) => {
                 if (err) {
                     return reject(err)
                 }
