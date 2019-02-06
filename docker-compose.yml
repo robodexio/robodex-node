@@ -16,8 +16,10 @@ services:
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379/
+      - RABBIT_URL=amqp://robodex:bEE2VWehu7JI0f3N@rabbit
     depends_on:
       - index
+      - rabbit
 
   udf:
     build: udf
@@ -31,6 +33,16 @@ services:
     depends_on:
       - api
       - udf
+
+  rabbit:
+    image: rabbitmq:management
+    restart: always
+    hostname: robodex-rabbit
+    ports:
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=robodex
+      - RABBITMQ_DEFAULT_PASS=bEE2VWehu7JI0f3N
 
   redis:
     image: redis

@@ -5,6 +5,7 @@
   "author": "Vitaly Berg <bergusman@gmail.com>",
   "private": true,
   "dependencies": {
+    "amqplib": "^0.5.3",
     "ioredis": "^4.6.2",
     "request": "^2.88.0",
     "ws": "^6.1.3"

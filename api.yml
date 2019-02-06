@@ -1,5 +1,15 @@
 version: '3'
 services:
+  rabbit:
+    image: rabbitmq:management
+    restart: always
+    hostname: robodex-rabbit
+    ports:
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=robodex
+      - RABBITMQ_DEFAULT_PASS=bEE2VWehu7JI0f3N
+
   redis:
     image: redis
     restart: always
@@ -19,6 +29,7 @@ services:
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379/
+      - RABBIT_URL=amqp://robodex:bEE2VWehu7JI0f3N@rabbit
     ports:
       - "9000:9000"
     depends_on:

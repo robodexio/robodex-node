@@ -1,13 +1,21 @@
 module.exports = class {
     constructor(broker, redis) {
         this.broker = broker
+        this.redis = redis
         setInterval(() => this.tick(), 1000)
     }
 
     async tick() {
-        this.broker.broadcast({
-            stream: 'funding',
-            data: 0.05
-        })
+        try {
+            let funding = await this.redis.get('FUNDING')
+            if (funding) {
+                this.broker.broadcast({
+                    stream: 'funding',
+                    data: funding
+                })
+            }
+        } catch (err) {
+            console.error(err)
+        }
     }
 }
