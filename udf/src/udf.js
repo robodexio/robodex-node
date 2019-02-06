@@ -1,4 +1,5 @@
 const errors = require('./errors')
+const Binance = require('./binance')
 
 module.exports = class {
     constructor() {
@@ -24,6 +25,7 @@ module.exports = class {
             pricescale: 2,
             data_status: 'streaming'
         }]
+        this.binance = new Binance()
     }
 
     async config() {
@@ -112,6 +114,53 @@ module.exports = class {
     }
 
     async history(symbol, from, to, resolution) {
-        
+        const RESOLUTIONS_INTERVALS_MAP = {
+            '1': '1m',
+            '3': '3m',
+            '5': '5m',
+            '15': '15m',
+            '30': '30m',
+            '60': '1h',
+            '120': '2h',
+            '240': '4h',
+            '360': '6h',
+            '480': '8h',
+            '720': '12h',
+            'D': '1d',
+            '1D': '1d',
+            '3D': '3d',
+            'W': '1w',
+            '1W': '1w',
+            'M': '1M',
+            '1M': '1M',
+        }
+
+        const interval = RESOLUTIONS_INTERVALS_MAP[resolution]
+        let totalKlines = []
+
+        from *= 1000
+        to *= 1000
+
+        while (true) {
+            const klines = await this.binance.klines('ETHUSDT', interval, from, to, 500)
+            totalKlines = totalKlines.concat(klines)
+            if (klines.length == 500) {
+                from = klines[klines.length - 1][0] + 1
+            } else {
+                if (totalKlines.length === 0) {
+                    return { s: 'no_data' }
+                } else {
+                    return {
+                        s: 'ok',
+                        t: totalKlines.map(b => Math.floor(b[0] / 1000)),
+                        c: totalKlines.map(b => parseFloat(b[4])),
+                        o: totalKlines.map(b => parseFloat(b[1])),
+                        h: totalKlines.map(b => parseFloat(b[2])),
+                        l: totalKlines.map(b => parseFloat(b[3])),
+                        v: totalKlines.map(b => parseFloat(b[5]))
+                    }
+                }
+            }
+        }
     }
 }
