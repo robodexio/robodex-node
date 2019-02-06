@@ -1,6 +1,5 @@
 module.exports = class {
-    constructor(broker) {
-        this.broker = broker
+    constructor(broker, rabbit) {
         rabbit.consumeUserTrades((msg) => {
             broker.send(msg.user, {
                 event: 'trade',
