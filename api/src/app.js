@@ -16,6 +16,10 @@ const broker = {
                 ws.send(msg)
             }
         })
+    },
+
+    send(user, msg) {
+        
     }
 }
 
@@ -29,3 +33,8 @@ new streams.Index(broker, redis)
 new streams.Funding(broker)
 new streams.Account(broker)
 new streams.Positions(broker)
+
+const events = require('./events')
+new events.LastTrade(broker)
+new events.UserTrade(broker)
+new events.UserOrder(broker)
