@@ -1,0 +1,25 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    restart: always
+
+  index:
+    build: index
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379/
+    depends_on:
+      - redis
+
+  core:
+    build: core
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379/
+    depends_on:
+      - redis
+      - index
+      

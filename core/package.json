@@ -7,6 +7,7 @@
   "dependencies": {
     "camelcase-keys": "^5.0.0",
     "ioredis": "^4.5.1",
-    "pg-promise": "^8.5.5"
+    "pg-promise": "^8.5.5",
+    "request": "^2.88.0"
   }
 }

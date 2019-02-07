@@ -64,7 +64,7 @@ const broker = {
 
 const streams = require('./streams')
 new streams.Time(broker)
-new streams.Orderbook(broker)
+new streams.Orderbook(broker, redis)
 new streams.Index(broker, redis)
 new streams.Funding(broker, redis)
 new streams.Account(broker)

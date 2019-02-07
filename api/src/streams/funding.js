@@ -7,7 +7,7 @@ module.exports = class {
 
     async tick() {
         try {
-            let funding = await this.redis.get('FUNDING')
+            let funding = await this.redis.get('FUNDING_RATE')
             if (funding) {
                 this.broker.broadcast({
                     stream: 'funding',

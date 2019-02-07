@@ -34,3 +34,14 @@ services:
       - "9000:9000"
     depends_on:
       - index
+
+  core:
+    build: core
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379/
+    depends_on:
+      - redis
+      - index
+      
