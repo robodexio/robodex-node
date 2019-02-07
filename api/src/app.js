@@ -5,7 +5,7 @@ const wss = new WS.Server({
 
 wss.on('connection', ws => {
     ws.on('message', msg => {
-        handleMessage(msg)
+        handleMessage(ws, msg)
     })
     ws.on('close', () => {
         handleClose(ws)
@@ -15,6 +15,7 @@ wss.on('connection', ws => {
 const jsonrpc = require('./jsonrpc')
 
 function handleMessage(ws, msg) {
+    console.log(msg);
     jsonrpc(ws, msg, methods)
 }
 

@@ -1,10 +1,16 @@
+const Binance = require('../binance')
+
 module.exports = class {
     constructor(broker) {
         this.broker = broker
+        this.binance = new Binance()
         setInterval(() => this.tick(), 1000)
     }
 
     async tick() {
+        this.binance.depth('ETHUSDT').then(depth => {
+
+        })
         this.broker.broadcast({
             stream: 'orderbook',
             data: {

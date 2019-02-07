@@ -14,7 +14,7 @@ module.exports = async (ws, msg, methods) => {
     }
 
     function success(id, result) {
-        ws.send({
+        send({
             jsonrpc: '2.0',
             result,
             id
@@ -22,7 +22,7 @@ module.exports = async (ws, msg, methods) => {
     }
 
     function error(id, error) {
-        ws.send({
+        send({
             jsonrpc: '2.0',
             error,
             id
@@ -81,7 +81,7 @@ module.exports = async (ws, msg, methods) => {
 
     try {
         const result = await method(msg.params)
-        return success(result)
+        return success(msg.id, result)
     } catch (err) {
         console.error(err)
         return error(msg.id, {
