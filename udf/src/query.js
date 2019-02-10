@@ -1,5 +1,5 @@
 /**
- * Validate and sanitize.
+ * Validate and sanitize query parameters.
  */
 
 class QueryError extends Error {

@@ -1,10 +1,10 @@
 const Binance = require('./binance')
 
-class UDFError extends Error {}
-class SymbolNotFound extends UDFError {}
-class InvalidResolution extends UDFError {}
+class UDFError extends Error { }
+class SymbolNotFound extends UDFError { }
+class InvalidResolution extends UDFError { }
 
-module.exports = class UDF {    
+class UDF {
     constructor() {
         this.supportedResolutions = ['1', '3', '5', '15', '30', '60', '120', '240', '360', '480', '720', '1D', '3D', '1W', '1M']
         this.symbols = [{
@@ -30,6 +30,11 @@ module.exports = class UDF {
         this.binance = new Binance()
     }
 
+    /**
+     * Convert items to response-as-a-table format.
+     * @param {array} items - Items to convert.
+     * @returns {object} Response-as-a-table formatted items.
+     */
     asTable(items) {
         let result = {}
         for (const item of items) {
@@ -50,7 +55,7 @@ module.exports = class UDF {
     }
 
     /**
-     * 
+     * Data feed configuration data.
      */
     async config() {
         return {
@@ -77,15 +82,17 @@ module.exports = class UDF {
     }
 
     /**
-     * 
+     * Symbols.
+     * @returns {object} Response-as-a-table formatted symbols.
      */
     async symbolInfo() {
         return this.asTable(this.symbols)
     }
 
     /**
-     * 
-     * @param {string} symbol 
+     * Symbol resolve.
+     * @param {string} symbol Symbol name or ticker.
+     * @returns {object} Symbol.
      */
     async symbol(symbol) {
         const comps = symbol.split(':')
@@ -101,11 +108,12 @@ module.exports = class UDF {
     }
 
     /**
-     * 
-     * @param {string} query 
-     * @param {string} type 
-     * @param {string} exchange 
-     * @param {number} limit 
+     * Symbol search.
+     * @param {string} query Text typed by the user in the Symbol Search edit box.
+     * @param {string} type One of the symbol types supported by back-end.
+     * @param {string} exchange One of the exchanges supported by back-end.
+     * @param {number} limit The maximum number of symbols in a response.
+     * @returns {array} Array of symbols.
      */
     async search(query, type, exchange, limit) {
         let symbols = this.symbols
@@ -133,13 +141,17 @@ module.exports = class UDF {
     }
 
     /**
-     * 
-     * @param {string} symbol 
-     * @param {number} from 
-     * @param {number} to 
-     * @param {string} resolution 
+     * Bars.
+     * @param {string} symbol - Symbol name or ticker.
+     * @param {number} from - Unix timestamp (UTC) of leftmost required bar.
+     * @param {number} to - Unix timestamp (UTC) of rightmost required bar.
+     * @param {string} resolution
      */
     async history(symbol, from, to, resolution) {
+        if (symbol !== 'ETH-PERPETUAL') {
+            throw new SymbolNotFound()
+        }
+
         const RESOLUTIONS_INTERVALS_MAP = {
             '1': '1m',
             '3': '3m',
@@ -195,6 +207,8 @@ module.exports = class UDF {
     }
 }
 
-module.exports.Error = UDFError
-module.exports.SymbolNotFound = SymbolNotFound
-module.exports.InvalidResolution = InvalidResolution
+UDF.Error = UDFError
+UDF.SymbolNotFound = SymbolNotFound
+UDF.InvalidResolution = InvalidResolution
+
+module.exports = UDF
