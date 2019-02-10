@@ -1,33 +1,57 @@
-const errors = require('./errors')
 const Binance = require('./binance')
 
-module.exports = class {
+class UDFError extends Error {}
+class SymbolNotFound extends UDFError {}
+class InvalidResolution extends UDFError {}
+
+module.exports = class UDF {    
     constructor() {
         this.supportedResolutions = ['1', '3', '5', '15', '30', '60', '120', '240', '360', '480', '720', '1D', '3D', '1W', '1M']
         this.symbols = [{
             symbol: 'ETH-PERPETUAL',
+            ticker: 'ETH-PERPETUAL',
             name: 'ETH-PERPETUAL',
             full_name: 'ETH-PERPETUAL',
-            ticker: 'ETH-PERPETUAL',
             description: 'ETH-PERPETUAL: Etherium / US Dollar Perpetual Inverse Swap Contract',
             exchange: 'ROBODEX',
             listed_exchange: 'ROBODEX',
-            exchange: 'ROBODEX',
             type: 'crypto',
+            currency_code: 'USD',
             session: '24x7',
             timezone: 'UTC',
-            currency_code: 'USD',
+            minmov: 1,
+            pricescale: 2,
             supported_resolutions: this.supportedResolutions,
             has_intraday: true,
             has_daily: true,
             has_weekly_and_monthly: true,
-            minmov: 1,
-            pricescale: 2,
             data_status: 'streaming'
         }]
         this.binance = new Binance()
     }
 
+    asTable(items) {
+        let result = {}
+        for (const item of items) {
+            for (const key in item) {
+                if (!result[key]) {
+                    result[key] = []
+                }
+                result[key].push(item[key])
+            }
+        }
+        for (const key in result) {
+            const values = [...new Set(result[key])]
+            if (values.length === 1) {
+                result[key] = values[0]
+            }
+        }
+        return result
+    }
+
+    /**
+     * 
+     */
     async config() {
         return {
             exchanges: [
@@ -52,29 +76,17 @@ module.exports = class {
         }
     }
 
+    /**
+     * 
+     */
     async symbolInfo() {
         return this.asTable(this.symbols)
     }
 
-    asTable(items) {
-        let result = {}
-        for (const item of items) {
-            for (const key in item) {
-                if (!result[key]) {
-                    result[key] = []
-                }
-                result[key].push(item[key])
-            }
-        }
-        for (const key in result) {
-            const values = [...new Set(result[key])]
-            if (values.length === 1) {
-                result[key] = values[0]
-            }
-        }
-        return result
-    }
-
+    /**
+     * 
+     * @param {string} symbol 
+     */
     async symbol(symbol) {
         const comps = symbol.split(':')
         const s = (comps.length > 1 ? comps[1] : symbol).toUpperCase()
@@ -85,9 +97,16 @@ module.exports = class {
             }
         }
 
-        throw new errors.SymbolNotFound('Not Found')
+        throw new SymbolNotFound()
     }
 
+    /**
+     * 
+     * @param {string} query 
+     * @param {string} type 
+     * @param {string} exchange 
+     * @param {number} limit 
+     */
     async search(query, type, exchange, limit) {
         let symbols = this.symbols
         if (type) {
@@ -113,6 +132,13 @@ module.exports = class {
         }))
     }
 
+    /**
+     * 
+     * @param {string} symbol 
+     * @param {number} from 
+     * @param {number} to 
+     * @param {string} resolution 
+     */
     async history(symbol, from, to, resolution) {
         const RESOLUTIONS_INTERVALS_MAP = {
             '1': '1m',
@@ -136,6 +162,10 @@ module.exports = class {
         }
 
         const interval = RESOLUTIONS_INTERVALS_MAP[resolution]
+        if (!interval) {
+            throw new InvalidResolution()
+        }
+
         let totalKlines = []
 
         from *= 1000
@@ -164,3 +194,7 @@ module.exports = class {
         }
     }
 }
+
+module.exports.Error = UDFError
+module.exports.SymbolNotFound = SymbolNotFound
+module.exports.InvalidResolution = InvalidResolution

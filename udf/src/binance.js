@@ -8,14 +8,23 @@ module.exports = class {
     request(path, options) {
         return new Promise((resolve, reject) => {
             request('https://api.binance.com' + path, options, (err, res, body) => {
-                if (err) return reject(err)
+                if (err) {
+                    return reject(err)
+                }
+                if (!body) {
+                    return reject(new Error('No body'))
+                }
 
                 try {
                     const json = JSON.parse(body)
-                    if (json.code) return reject(new Error(`${json.code}: ${json.msg}`))
-                    resolve(json)
+                    if (json.code && json.msg) {
+                        const err = new Error(json.msg)
+                        err.code = json.code
+                        return reject(err)
+                    }
+                    return resolve(json)
                 } catch (err) {
-                    reject(err)
+                    return reject(err)
                 }
             })
         })
